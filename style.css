@@ -1,0 +1,688 @@
+/* ===== 1. RESET & BASE ===== */
+* { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+}
+
+body {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #211102;
+    font-family: 'Nunito', sans-serif;
+    overflow: hidden;
+}
+
+.scene {
+    width: 320px;
+    height: 440px;
+    perspective: 1500px;
+    position: relative;
+}
+
+/* ===== 2. WADAH BUKU ===== */
+.book {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+}
+
+/* ===== 3. JILID SPIRAL (3 STATE) ===== */
+.book::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 25px;
+    z-index: 90;
+    
+    /* DEFAULT: Posisi tengah (buku terbuka) */
+    left: -12px; 
+    transition: left 0.5s ease-in-out; 
+    
+    background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 13px,
+        #333 13px,
+        #888 15px,
+        #333 17px,
+        transparent 17px,
+        transparent 30px
+    );
+}
+
+/* STATE 1: Cover depan tertutup */
+.book.state-closed-start::before {
+    left: -30px;
+}
+
+/* STATE 3: Cover belakang tertutup */
+.book.state-closed-end::before {
+    left: 0px;
+}
+
+/* ===== 4. TALI ELASTIS (3 STATE) ===== */
+.book::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    
+    /* DEFAULT: Posisi longgar (buku terbuka) */
+    right: px; 
+    
+    width: px; /*kaann kiri*/
+    height: 382px; /*tinggi */
+    
+    border: 30px solid #D81B60;  /* Ketebalan */
+    border-left: none;
+    border-radius: 4 30px 20px 4px;
+    
+    z-index: -1; 
+    
+    transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform: translateY(-50%);
+    opacity: 0.6;
+}
+
+/* STATE 1: Tali menjepit cover depan */
+.book.state-closed-start::after {
+    right: 320px;
+    width: px;
+    z-index: 100;
+    opacity: 1;
+    transform: translateY(-50%) scaleX(1.1);
+}
+
+/* STATE 3: Tali menjepit cover belakang */
+.book.state-closed-end::after {
+    right: 296px;
+    width: px;
+    z-index: 100;
+    opacity: 1;
+    transform: translateY(-50%) scaleX(1.1);
+}
+
+/* ===== 5. KERTAS ===== */
+.paper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transform-origin: left center;
+    transition: transform 1s cubic-bezier(0.645, 0.045, 0.355, 1);
+    transform-style: preserve-3d;
+    border-radius: 0 8px 8px 0;
+}
+
+.flipped { 
+    transform: rotateY(-180deg); 
+}
+
+#p1 { z-index: 7; }
+#p2 { z-index: 6; }
+#p3 { z-index: 5; }
+#p4 { z-index: 4; }
+#p5 { z-index: 3; }
+#p6 { z-index: 2; }
+#p7 { z-index: 1; }
+
+/* ===== 6. SISI DEPAN (LUBANG KIRI) ===== */
+.front {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #ff9e9e;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backface-visibility: hidden;
+    border: none;
+    box-shadow: none;
+    border-radius: 0 8px 8px 0;
+    
+    /* Lubang spiral di kiri */
+    background-image: radial-gradient(circle at 8px 15px, rgb(255, 255, 255) 4px, none);
+    background-size: 100% 30px;
+    background-position: 0 0;
+    background-repeat: repeat-y;
+}
+
+/* ===== 7. SISI BELAKANG (LUBANG KANAN) ===== */
+.back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #ffbaba;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backface-visibility: hidden;
+    border: none;
+    box-shadow:noe;
+    transform: rotateY(180deg);
+    border-radius: 8px 0 0 8px;
+
+    /* Lubang spiral di kanan */
+    background-image: radial-gradient(circle at calc(100% - 8px) 15px, #b8aeae 4px, transparent 5px);
+    background-size: 100% 30px;
+    background-position: 0 0;
+    background-repeat: repeat-y;
+}
+
+/* GANTI #f2 DENGAN ID HALAMAN ANDA YANG SEBENARNYA */
+#f2 {
+    justify-content: flex-start; /* Paksa konten mulai dari atas */
+    padding-top: 50px;           /* Beri jarak dari tepi atas kertas */
+    gap: 20px;                   /* Beri jarak antar elemen (teks ke gambar) */
+
+    /* Dorong dari kiri agar geser ke kanan */
+    margin-left: 20px; 
+    /* Dorong dari atas agar geser ke bawah */
+    margin-top: -10px;
+    /* Catatan: Ini mungkin mempengaruhi posisi teks di bawahnya */
+}
+
+#b5 {
+    justify-content: flex-start; /* Paksa konten mulai dari atas */
+    padding-top: 50px;           /* Beri jarak dari tepi atas kertas */
+    gap: 20px;                   /* Beri jarak antar elemen (teks ke gambar) */
+
+    /* Dorong dari kiri agar geser ke kanan */
+    margin-left: 20px; 
+    /* Dorong dari atas agar geser ke bawah */
+    margin-top: -10px;
+    /* Catatan: Ini mungkin mempengaruhi posisi teks di bawahnya */
+}
+
+#foto4 img{
+    /* Dorong dari kiri agar geser ke kanan */
+    margin-left: 20px; 
+    
+    /* Dorong dari atas agar geser ke bawah */
+    margin-top: 5px;
+    
+    /* Catatan: Ini mungkin mempengaruhi posisi teks di bawahnya */
+
+    justify-content: flex-start; /* Paksa konten mulai dari atas */
+    padding-top: -20px;           /* Beri jarak dari tepi atas kertas */
+    gap: 20px;                   /* Beri jarak antar elemen (teks ke gambar) */
+
+    transform: rotate(8deg) translateX(-20px) translateY(-10px);
+    
+
+}
+
+#foto2 img {
+    /* Dorong dari kiri agar geser ke kanan */
+    margin-left: 20px; 
+    
+    /* Dorong dari atas agar geser ke bawah */
+    margin-top: -80px;
+    
+    /* Catatan: Ini mungkin mempengaruhi posisi teks di bawahnya */
+
+    justify-content: flex-start; /* Paksa konten mulai dari atas */
+    padding-top: -20px;           /* Beri jarak dari tepi atas kertas */
+    gap: 20px;                   /* Beri jarak antar elemen (teks ke gambar) */
+
+    transform: rotate(8deg) translateX(-20px) translateY(-10px);
+    
+}
+/* Perkecil ukuran jika ada banyak foto dalam satu halaman */
+#f6 img {
+    width: 80%;         /* Perkecil lebar */
+    max-height: 120px;  /* Batasi tinggi agar tidak meluap keluar kertas */
+    margin-bottom: 1px; /* Jarak antar foto */
+    transform: rotate(0deg); /* Reset rotasi jika terlalu berantakan */
+}
+
+/* Jika ingin posisi foto acak/estetik */
+#img7 {
+    transform: rotate(7deg) translateX(10px) !important;
+}
+
+#img8 {
+    transform: rotate(-7deg) translateX(-10px) !important;
+}
+
+#f7 img {
+    width: 80%;         /* Perkecil lebar */
+    max-height: 120px;  /* Batasi tinggi agar tidak meluap keluar kertas */
+    margin-bottom: 1px; /* Jarak antar foto */
+    transform: rotate(0deg); /* Reset rotasi jika terlalu berantakan */
+}
+
+/* Jika ingin posisi foto acak/estetik */
+#img9 {
+    transform: rotate(7deg) translateX(10px) !important;
+}
+
+#img10 {
+    transform: rotate(-7deg) translateX(-10px) !important;
+}
+
+/* Container pembungkus harus dipastikan memiliki posisi relatif */
+#f6.front-content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+/* Ukuran umum untuk ketiga foto agar muat di satu halaman */
+#b5 img {
+    width: 160px !important; /* Ukuran diperkecil agar tidak memenuhi layar */
+    height: auto;
+    position: absolute; /* Membuat foto bisa ditumpuk secara bebas */
+    border: 5px solid white;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* Foto paling atas (tengah agak ke atas) */
+#img10 {
+    transform: rotate(-5deg) translateY(-80px) translateX(-50px) !important;
+    z-index: 1;
+}
+/* translateX(20px)  -> Geser ke kanan (positif) atau kiri (negatif)
+       translateY(-50px) -> Geser ke atas (negatif) atau bawah (positif)
+       rotate(-7deg)     -> Memutar foto
+    */
+/* Foto tengah (agak ke kanan) */
+#img11 {
+    transform: rotate(30deg) translateY(-80px) translateX(-0px) !important;
+    z-index: 2;
+}
+
+/* Foto bawah (agak ke kiri) */
+#img12 {
+    transform: rotate(8deg) translateY(40px) translateX(-10px) !important;
+    z-index: 3;
+}
+
+#f7 img {
+    width: 200px !important; /* Ukuran diperkecil agar tidak memenuhi layar */
+    height: auto;
+    position: absolute; /* Membuat foto bisa ditumpuk secara bebas */
+    border: 5px solid white;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* Foto paling atas (tengah agak ke atas) */
+#img12 {
+    transform: rotate(0deg) translateY(-100px) translateX(-20px) !important;
+    z-index: 1;
+}
+/* translateX(20px)  -> Geser ke kanan (positif) atau kiri (negatif)
+       translateY(-50px) -> Geser ke atas (negatif) atau bawah (positif)
+       rotate(-7deg)     -> Memutar foto
+    */
+/* Foto tengah (agak ke kanan) */
+#img13 {
+    transform: rotate(0deg) translateY(0px) translateX(-0px) !important;
+    z-index: 2;
+}
+
+/* Foto bawah (agak ke kiri) */
+#img14 {
+    transform: rotate(0deg) translateY(100px) translateX(-10px) !important;
+    z-index: 3;
+}
+
+/* Ganti #b2 dengan ID halaman pink Anda (misal #b1, #b2, atau #f3) */
+#b2 {
+    /* 1. Memindahkan konten ke ATAS */
+    justify-content: flex-start !important; 
+    
+    /* 2. Memberi jarak agar tidak nempel banget di atas */
+    padding-top: 60px; 
+    
+    /* 3. (Opsional) Mengatur jarak antar elemen jika ada gambar di bawahnya */
+    gap: 20px; 
+}
+/* Opsional: Jika ingin teksnya rata kiri-kanan agar rapi */
+#f2 p {
+    text-align: justify;
+    padding: 0 10px; /* Jarak kiri kanan agar tidak mepet kertas */
+}
+
+#f8 img{
+    /* Dorong dari kiri agar geser ke kanan */
+    margin-left: 20px; 
+    width:400px;
+    /* Dorong dari atas agar geser ke bawah */
+    margin-top: 5px;
+    
+    /* Catatan: Ini mungkin mempengaruhi posisi teks di bawahnya */
+
+    justify-content: flex-start; /* Paksa konten mulai dari atas */
+    padding-top: -20px;           /* Beri jarak dari tepi atas kertas */
+    gap: 20px;                   /* Beri jarak antar elemen (teks ke gambar) */
+
+    transform: rotate(90deg) translateX(10px) translateY(-10px);
+
+    #b6 {
+        justify-content: flex-start; /* Paksa konten mulai dari atas */
+        padding-top: 50px;           /* Beri jarak dari tepi atas kertas */
+        gap: 20px;                   /* Beri jarak antar elemen (teks ke gambar) */
+    
+        /* Dorong dari kiri agar geser ke kanan */
+        margin-left: 20px; 
+        /* Dorong dari atas agar geser ke bawah */
+        margin-top: -10px;
+        /* Catatan: Ini mungkin mempengaruhi posisi teks di bawahnya */
+    }
+
+}
+/* ===== 8. COVER TRANSPARAN ===== */
+/* Cover Depan */
+/* ===== COVER DEPAN KERTAS BIASA ===== */
+#p1 .front {
+    /* 1. Warna Putih Solid (Bukan transparan) */
+    background-color: #ffd6d6; 
+    
+    /* 2. Hapus efek kaca buram */
+    backdrop-filter: none;
+    
+    /* 3. Border halus agar terlihat seperti kertas */
+    border: 1px solid #ccc; 
+    border-left: none; /* Hilangkan garis kiri agar menyatu dengan spiral */
+    
+    /* 4. Shadow untuk efek tumpukan */
+    box-shadow: none;
+    
+    /* 5. Tetap pertahankan lubang spiral */
+    background-image: none;
+    background-size: 100% 30px;
+    background-position: 0 0;
+    background-repeat: repeat-y;
+}
+
+#p7 .front {
+    background-color: #ffd6d6;
+}
+
+/* Cover Belakang */
+#p7 .back {
+    background-color: #ffd6d6;
+    backdrop-filter: none;
+    box-shadow: none;
+    background-image: none;
+}
+
+/* ===== 9. KONTEN ===== */
+.front-content, 
+.back-content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    text-align: center;
+}
+
+.front-content { 
+    padding-left: 35px; 
+} 
+
+.back-content { 
+    padding-right: 35px; 
+}
+
+
+h1 {
+    font-family: 'Dancing Script', cursive;
+    color: #d81b60;
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    text-shadow: 0 2px 5px rgba(255,255,255,0.8);
+}
+
+p { 
+    color: #272626; 
+    font-size: 1rem; 
+}
+
+img {
+    width: 85%;
+    max-height: 250px;
+    object-fit: cover;
+    border: 3px solid white;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transform: rotate(-2deg);
+    margin-bottom: 15px;
+}
+
+/* ===== 10. NAVIGATION CONTROLS ===== */
+.controls {
+    position: absolute;
+    bottom: 20px;
+    display: flex;
+    gap: 40px;
+    z-index: 100;
+}
+
+.controls button {
+    width: 45px; 
+    height: 45px;
+    border-radius: 50%; 
+    border: none;
+    background: #d81b60; 
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    transition: transform 0.2s, background 0.2s;
+}
+
+.controls button:hover {
+    transform: scale(1.1);
+    background: #c2185b;
+}
+
+.controls button:active {
+    transform: scale(0.95);
+}
+
+/* ===== 11. MUSIC CONTROLS ===== */
+.music-controls {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.music-controls button {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: white;
+    border: 2px solid #d81b60;
+    color: #d81b60;
+    font-size: 1.5rem;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.2s, background 0.2s;
+}
+
+.music-controls button:hover {
+    transform: scale(1.1);
+    background: #ffebee;
+}
+
+/* Volume Slider */
+#volume-slider {
+    writing-mode: bt-lr;
+    -webkit-appearance: slider-vertical;
+    width: 8px;
+    height: 100px;
+    background: #fff;
+    border-radius: 10px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.3s;
+    accent-color: #d81b60;
+}
+
+.music-controls:hover #volume-slider {
+    opacity: 1;
+}
+
+/* Music Playing Animation */
+.music-playing {
+    animation: spin 3s linear infinite;
+    background: #d81b60 !important;
+    color: white !important;
+}
+
+@keyframes spin { 
+    100% { 
+        transform: rotate(360deg); 
+    } 
+}
+
+/* ===== 12. RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .scene { 
+        width: 85vw; 
+        height: 60vh; 
+    }
+    
+    h1 {
+        font-size: 2rem;
+    }
+    
+    p {
+        font-size: 0.9rem;
+        color: rgb(0, 0, 0);
+    }
+    
+    img {
+        max-height: 200px;
+    }
+    
+    .controls {
+        bottom: 10px;
+        gap: 30px;
+    }
+    
+    .controls button {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.5rem;
+    }
+    
+    .music-controls {
+        top: 10px;
+        right: 10px;
+    }
+    
+    .music-controls button {
+        width: 45px;
+        height: 5px;
+        font-size: 1.3rem;
+    }
+}
+
+/* Kontainer tumpukan */
+.photo-stack {
+    position: relative;
+    width: 100%;
+    height: 340px; /* Sesuaikan dengan tinggi area foto */
+    margin-bottom: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Style dasar untuk setiap foto dalam tumpukan */
+.stacked-photo {
+    position: absolute; /* Membuat foto bisa bertumpuk */
+    width: 180px !important; /* Ukuran foto polaroid */
+    height: auto;
+    border: 8px solid white !important; /* Frame putih ala polaroid */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2) !important;
+    transition: transform 0.3s ease, z-index 0.3s;
+    cursor: pointer;
+}
+
+/* Foto pertama (di bawah) */
+.stacked-photo:nth-child(1) {
+    transform: rotate(-27deg) translateX(-10px);
+    z-index: 1;
+}
+
+/* Foto kedua (di atas) */
+.stacked-photo:nth-child(2) {
+    transform: rotate(5deg) translateX(40px);
+    z-index: 2;
+}
+
+/* Efek Hover: Foto yang disentuh akan naik ke paling atas */
+.stacked-photo:hover {
+    transform: scale(1.1) rotate(0deg);
+    z-index: 10;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3) !important;
+}
+
+/* Sesuaikan posisi caption agar tidak tertutup */
+.caption {
+    margin-top: 40px;
+    position: relative;
+    z-index: 5;
+}
+
+.btn-drive {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+    padding: 12px 25px;
+    background-color: #d81b60; /* Warna pink khas desain Anda */
+    color: white !important;   /* Memastikan teks tetap putih */
+    text-decoration: none;
+    border-radius: 50px;       /* Membuat bentuk pil (rounded) */
+    font-weight: bold;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 15px rgba(216, 27, 96, 0.3);
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+/* Efek saat tombol diarahkan kursor (Hover) */
+.btn-drive:hover {
+    background-color: #c2185b;
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 6px 20px rgba(216, 27, 96, 0.4);
+}
+
+/* Efek saat tombol ditekan (Active) */
+.btn-drive:active {
+    transform: translateY(0) scale(0.95);
+}
+
+/* Animasi tambahan agar tombol lebih menarik */
+.btn-drive .icon {
+    font-size: 1.1rem;
+}
